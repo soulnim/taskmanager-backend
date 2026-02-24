@@ -1,21 +1,29 @@
-# Stage 1: Build
-FROM maven:3.9.2-eclipse-temurin-21 AS build
-WORKDIR /app
+# syntax=docker/dockerfile:1
 
-# Copy pom and source code
-COPY pom.xml .
+# -----------------------
+# Stage 1: Build the Spring Boot jar
+# -----------------------
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
+WORKDIR /build
+
+# Copy Maven project files
+COPY pom.xml ./
 COPY src ./src
 
-# Build the JAR
-RUN mvn clean package -DskipTests
+# Build the jar without running tests
+RUN mvn -B -DskipTests package
 
-# Stage 2: Run
-FROM eclipse-temurin:21-jdk-alpine
+# -----------------------
+# Stage 2: Runtime image
+# -----------------------
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Copy the built JAR from previous stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the jar built in the previous stage
+COPY --from=builder /build/target/taskmanager-backend-0.0.1-SNAPSHOT.jar app.jar
 
+# Expose backend port
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","app.jar"]
+# Run the app
+ENTRYPOINT ["java", "-jar", "app.jar"]
