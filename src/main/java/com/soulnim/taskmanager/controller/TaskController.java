@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://taskmanager-backend-production-92a7.up.railway.app")
+@CrossOrigin(origins = "https://taskmanager-frontend-production-6823.up.railway.app")
 public class TaskController {
 
     private final TaskService taskService;
